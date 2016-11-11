@@ -1,7 +1,9 @@
 FROM centos:6.6
 MAINTAINER rubberBoy <gaosheng08@gmail.com>
 
-RUN yum install passwd openssl openssh-server -y
+RUN yum install passwd openssl openssh-server -y \
+	&& yum clean all
+
 RUN ssh-keygen -q -t rsa -f /etc/ssh/ssh_host_rsa_key \
         && ssh-keygen -q -t dsa -f /etc/ssh/ssh_host_dsa_key \
         && ssh-keygen -q -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key -N "" \
@@ -22,7 +24,8 @@ COPY php5.3/software/php-$PHP_VERSION.tar.gz /opt/php-$PHP_VERSION.tar.gz
 COPY php5.3/software/xdebug-$XDEBUG_VERSION.tgz /opt/xdebug-$XDEBUG_VERSION.tgz
 
 #环境准备
-RUN yum install -y gcc gcc-c++ autoconf libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libpng libpng-devel libxml2 libxml2-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel bzip2 bzip2-devel ncurses curl openssl-devel gdbm-devel db4-devel libXpm-devel libX11-devel gd-devel gmp-devel readline-devel libxslt-devel expat-devel xmlrpc-c xmlrpc-c-devel libtool libtool-ltdl libtool-ltdl-devel tar wget telnet mysql-devel
+RUN yum install -y gcc gcc-c++ autoconf libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libpng libpng-devel libxml2 libxml2-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel bzip2 bzip2-devel ncurses curl openssl-devel gdbm-devel db4-devel libXpm-devel libX11-devel gd-devel gmp-devel readline-devel libxslt-devel expat-devel xmlrpc-c xmlrpc-c-devel libtool libtool-ltdl libtool-ltdl-devel tar wget telnet mysql-devel \
+	&& yum clean all
 
 #apr 
 RUN cd /opt/ \
