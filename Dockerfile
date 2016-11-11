@@ -1,7 +1,7 @@
 FROM centos:6.6
 MAINTAINER rubberBoy <gaosheng08@gmail.com>
 
-RUN yum install passwd openssl openssh-server -y \
+RUN yum iyum-plugin-ovl nstall passwd openssl openssh-server -y \
 	&& yum clean all
 
 RUN ssh-keygen -q -t rsa -f /etc/ssh/ssh_host_rsa_key \
