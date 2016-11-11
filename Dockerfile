@@ -114,7 +114,7 @@ RUN cd /opt/ \
 	&& cd ../ \
 	&& rm -rf xdebug-$XDEBUG_VERSION* \
 	&& echo "[xdebug]" >> /usr/local/php/lib/php.ini \
-	&& echo "zend_extension=/usr/local/php/lib/php/extensions/no-debug-zts-20131226/xdebug.so" >> /usr/local/php/lib/php.ini \
+	&& echo "zend_extension=/usr/local/php/lib/php/extensions/no-debug-zts-20090626/xdebug.so" >> /usr/local/php/lib/php.ini \
 	&& echo "xdebug.remote_enable=on" >> /usr/local/php/lib/php.ini \
 	&& echo "xdebug.remote_port=9000" >> /usr/local/php/lib/php.ini \
 	&& echo ";xdebug.remote_connect_back=on" >> /usr/local/php/lib/php.ini \
