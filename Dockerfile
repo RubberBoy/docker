@@ -1,6 +1,9 @@
 FROM centos:6.6
 MAINTAINER rubberBoy <gaosheng08@gmail.com>
 
+### -------------------------------------- basic ---------------------------------------
+yum install -y gcc gcc-c++ glibc glibc-devel glib2 glib2-devel openssl-devel curl tar wget telnet
+
 ### -------------------------------------- sshd start --------------------------------------
 RUN yum install yum-plugin-ovl passwd openssl openssh-server -y \
 	&& yum clean all
@@ -24,7 +27,7 @@ COPY apache/software/apr-$APR_VERSION.tar.gz /opt/apr-$APR_VERSION.tar.gz
 COPY apache/software/pcre-$PCRE_VERSION.tar.gz /opt/pcre-$PCRE_VERSION.tar.gz
 
 #环境准备
-RUN yum install -y gcc gcc-c++ autoconf libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libpng libpng-devel libxml2 libxml2-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel bzip2 bzip2-devel ncurses curl openssl-devel gdbm-devel db4-devel libXpm-devel libX11-devel gd-devel gmp-devel readline-devel libxslt-devel expat-devel xmlrpc-c xmlrpc-c-devel libtool libtool-ltdl libtool-ltdl-devel tar wget telnet mysql-devel
+RUN yum install -y autoconf libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libpng libpng-devel libxml2 libxml2-devel zlib zlib-devel bzip2 bzip2-devel ncurses gdbm-devel db4-devel libXpm-devel libX11-devel gd-devel gmp-devel readline-devel libxslt-devel expat-devel xmlrpc-c xmlrpc-c-devel libtool libtool-ltdl libtool-ltdl-devel mysql-devel
 
 #apr 
 RUN cd /opt/ \
@@ -181,7 +184,7 @@ RUN cd /opt \
 	&& cmake . \
 	&& make \
 	&& make install \
-	&& cp conf/mysql.service /etc/init.d/mysql \
+	&& cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysql \
 	&& cd ../ \
 	&& rm -rf mysql-$MYSQL_VERSION* \
 	&& groupadd mysql \
@@ -191,5 +194,3 @@ RUN cd /opt \
 ### -------------------------------------- mysql end --------------------------------------
 
 EXPOSE 22 80 9000 3306
-
-CMD ["/usr/local/apache/bin/apachectl start"]
