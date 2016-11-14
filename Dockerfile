@@ -2,7 +2,7 @@ FROM centos:6.6
 MAINTAINER rubberBoy <gaosheng08@gmail.com>
 
 ### -------------------------------------- basic ---------------------------------------
-yum install -y gcc gcc-c++ glibc glibc-devel glib2 glib2-devel openssl-devel curl tar wget telnet
+RUN yum install -y gcc gcc-c++ glibc glibc-devel glib2 glib2-devel openssl-devel curl tar wget telnet
 
 ### -------------------------------------- sshd start --------------------------------------
 RUN yum install yum-plugin-ovl passwd openssl openssh-server -y \
