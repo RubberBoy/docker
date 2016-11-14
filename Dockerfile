@@ -143,12 +143,12 @@ RUN yum install libevent libevent-devel -y
 # memcached 服务端
 RUN cd /opt \
 	&& tar -xzvf memcached-$MEMCACHED.tar.gz \
-	&& cd memcached-MEMCACHED \
+	&& cd memcached-$MEMCACHED \
 	&& ./configure --prefix=/usr/local/memcached \
 	&& make \
 	&& make install \
 	&& cd ../ \
-	&& rm -rf memcached-MEMCACHED*
+	&& rm -rf memcached-$MEMCACHED*
 
 # php memcache 扩展
 RUN cd /opt \
