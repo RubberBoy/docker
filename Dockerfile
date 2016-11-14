@@ -2,11 +2,10 @@ FROM centos:6.6
 MAINTAINER rubberBoy <gaosheng08@gmail.com>
 
 ### -------------------------------------- basic ---------------------------------------
-RUN yum install -y gcc gcc-c++ glibc glibc-devel glib2 glib2-devel openssl-devel curl tar wget telnet
+RUN yum install -y yum-plugin-ovl gcc gcc-c++ glibc glibc-devel glib2 glib2-devel openssl-devel curl tar wget telnet
 
 ### -------------------------------------- sshd start --------------------------------------
-RUN yum install yum-plugin-ovl passwd openssl openssh-server -y \
-	&& yum clean all
+RUN yum install -y passwd openssl openssh-server
 
 RUN ssh-keygen -q -t rsa -f /etc/ssh/ssh_host_rsa_key \
         && ssh-keygen -q -t dsa -f /etc/ssh/ssh_host_dsa_key \
