@@ -80,9 +80,11 @@ RUN cd /opt/ \
 	&& make \
 	&& make install \
 	&& sed -i "s/#ServerName www.example.com:80/ServerName localhost/g" /usr/local/apache/conf/httpd.conf \
+	&& sed -i "s/#Include conf\/extra\/httpd-vhosts.conf/Include conf\/extra\/httpd-vhosts.conf/g" /usr/local/apache/conf/httpd.conf \
 	&& cd ../ \
 	&& rm -rf httpd-$APACHE_VERSION*
 
+COPY apache/httpd-vhosts.conf /usr/local/apache/extra/httpd-vhosts.conf
 ### -------------------------------------- apache end --------------------------------------
 
 ### -------------------------------------- php start --------------------------------------
@@ -135,8 +137,8 @@ COPY php5.3/xdebug.ini /usr/local/php/conf/xdebug.ini
 ENV MEMCACHED 1.4.33
 ENV MEMCACHE 2.2.7
 
-COPY software/memcached-$MEMCACHED.tar.gz /opt/memcached-$MEMCACHED.tar.gz
-COPY software/memcache-$MEMCACHE.tgz /opt/memcache-$MEMCACHE.tgz
+COPY memcached/software/memcached-$MEMCACHED.tar.gz /opt/memcached-$MEMCACHED.tar.gz
+COPY php5.3/software/memcache-$MEMCACHE.tgz /opt/memcache-$MEMCACHE.tgz
 
 RUN yum install libevent libevent-devel -y
 
@@ -166,9 +168,9 @@ RUN cd /opt \
 ### -------------------------------------- mysql start --------------------------------------
 ENV MYSQL_VERSION 5.6.34
 
-COPY software/mysql-$MYSQL_VERSION.tar.gz /opt/mysql-$MYSQL_VERSION.tar.gz
-COPY software/init_mysql.sh /opt/init_mysql.sh
-COPY software/my.cnf /etc/my.cnf
+COPY mysql/software/mysql-$MYSQL_VERSION.tar.gz /opt/mysql-$MYSQL_VERSION.tar.gz
+COPY mysql/init_mysql.sh /opt/init_mysql.sh
+COPY mysql/my.cnf /etc/my.cnf
 
 RUN yum install cmake bison ncurses -y
 
@@ -179,14 +181,11 @@ RUN cd /opt \
 	&& cmake . \
 	&& make \
 	&& make install \
+	&& cp conf/mysql.service /etc/init.d/mysql \
 	&& cd ../ \
 	&& rm -rf mysql-$MYSQL_VERSION* \
 	&& groupadd mysql \
 	&& useradd -g mysql mysql \
-	&& /usr/local/mysql/scripts/mysql_install_db \
-		--user=mysql \
-		--basedir=/usr/local/mysql \
-		--datadir=/usr/local/mysql/data \
 	&& chmod u+x /opt/init_mysql.sh \
 	&& /opt/init_mysql.sh
 ### -------------------------------------- mysql end --------------------------------------
