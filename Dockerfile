@@ -136,7 +136,7 @@ ENV MEMCACHED 1.4.33
 ENV MEMCACHE 2.2.7
 
 COPY software/memcached-$MEMCACHED.tar.gz /opt/memcached-$MEMCACHED.tar.gz
-COPY software/memcache-.tgz /opt/memcache-$MEMCACHE.tgz
+COPY software/memcache-$MEMCACHE.tgz /opt/memcache-$MEMCACHE.tgz
 
 RUN yum install libevent libevent-devel -y
 
