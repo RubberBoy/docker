@@ -1,6 +1,7 @@
 FROM centos:6.6
 MAINTAINER rubberBoy <gaosheng08@gmail.com>
 
+### -------------------------------------- sshd start --------------------------------------
 RUN yum install yum-plugin-ovl passwd openssl openssh-server -y \
 	&& yum clean all
 
@@ -8,24 +9,22 @@ RUN ssh-keygen -q -t rsa -f /etc/ssh/ssh_host_rsa_key \
         && ssh-keygen -q -t dsa -f /etc/ssh/ssh_host_dsa_key \
         && ssh-keygen -q -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key -N "" \
         && sed -i 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config
+        && sed -i 's/^root.*/root:$6$flMoy3hB$v3a.GohI8oipbH2DLd6TYorIUkvYPb2qJAc6yNsId7CVQPCpKjIG9EilgZxHREfYHAZhCMlqkUnfgfYpSp6yP1:17116:0:99999:7:::/g' /etc/shadow
+### -------------------------------------- sshd end --------------------------------------
 
+### -------------------------------------- apache start --------------------------------------
 ENV APR_VERSION 1.5.2
 ENV APR_UTIL_VERSION 1.5.4
 ENV PCRE_VERSION 8.39
 ENV APACHE_VERSION 2.4.23
-ENV PHP_VERSION 5.3.29
-ENV XDEBUG_VERSION 2.2.7
 
 COPY apache/software/httpd-$APACHE_VERSION.tar.gz /opt/httpd-$APACHE_VERSION.tar.gz
 COPY apache/software/apr-util-$APR_UTIL_VERSION.tar.gz /opt/apr-util-$APR_UTIL_VERSION.tar.gz
 COPY apache/software/apr-$APR_VERSION.tar.gz /opt/apr-$APR_VERSION.tar.gz
 COPY apache/software/pcre-$PCRE_VERSION.tar.gz /opt/pcre-$PCRE_VERSION.tar.gz
-COPY php5.3/software/php-$PHP_VERSION.tar.gz /opt/php-$PHP_VERSION.tar.gz
-COPY php5.3/software/xdebug-$XDEBUG_VERSION.tgz /opt/xdebug-$XDEBUG_VERSION.tgz
 
 #环境准备
-RUN yum install -y gcc gcc-c++ autoconf libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libpng libpng-devel libxml2 libxml2-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel bzip2 bzip2-devel ncurses curl openssl-devel gdbm-devel db4-devel libXpm-devel libX11-devel gd-devel gmp-devel readline-devel libxslt-devel expat-devel xmlrpc-c xmlrpc-c-devel libtool libtool-ltdl libtool-ltdl-devel tar wget telnet mysql-devel \
-	&& yum clean all
+RUN yum install -y gcc gcc-c++ autoconf libjpeg libjpeg-devel libpng libpng-devel freetype freetype-devel libpng libpng-devel libxml2 libxml2-devel zlib zlib-devel glibc glibc-devel glib2 glib2-devel bzip2 bzip2-devel ncurses curl openssl-devel gdbm-devel db4-devel libXpm-devel libX11-devel gd-devel gmp-devel readline-devel libxslt-devel expat-devel xmlrpc-c xmlrpc-c-devel libtool libtool-ltdl libtool-ltdl-devel tar wget telnet mysql-devel
 
 #apr 
 RUN cd /opt/ \
@@ -84,6 +83,15 @@ RUN cd /opt/ \
 	&& cd ../ \
 	&& rm -rf httpd-$APACHE_VERSION*
 
+### -------------------------------------- apache end --------------------------------------
+
+### -------------------------------------- php start --------------------------------------
+ENV PHP_VERSION 5.3.29
+ENV XDEBUG_VERSION 2.2.7
+
+COPY php5.3/software/php-$PHP_VERSION.tar.gz /opt/php-$PHP_VERSION.tar.gz
+COPY php5.3/software/xdebug-$XDEBUG_VERSION.tgz /opt/xdebug-$XDEBUG_VERSION.tgz
+
 # php5.3
 RUN cd /opt/ \
 	&& tar -xzvf php-$PHP_VERSION.tar.gz \
@@ -92,10 +100,16 @@ RUN cd /opt/ \
 	&& ln -s /usr/lib64/mysql/libmysqlclient.so /usr/lib/ \
 	# 解决 「error: Cannot find libmysqlclient_r under /usr」
 	&& ln -s /usr/lib64/mysql/libmysqlclient_r.so /usr/lib/ \
-	&& ./configure --prefix=/usr/local/php --with-apxs2=/usr/local/apache/bin/apxs --with-mysql --with-pdo-mysql \
+	&& ./configure --prefix=/usr/local/php \
+#		--with-config-file-path=	\
+		--with-config-file-scan-dir=/usr/local/php/conf	\
+		--with-apxs2=/usr/local/apache/bin/apxs \
+		--with-mysql --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
+		--enable-mbstring --enable-mbregex --enable-zip \
 	&& make \
 	&& make install \
-	&& cp /opt/php-$PHP_VERSION/php.ini-development /usr/local/php/php.ini \
+	&& cp /opt/php-$PHP_VERSION/php.ini-development /usr/local/php/lib/php.ini \
+	&& sed -i "s/;date.timezone =/date.timezone = \"Asia\/Shanghai\"/g" /usr/local/php/lib/php.ini \
 	&& cd ../ \
 	&& rm -rf php-$PHP_VERSION*
 
@@ -112,17 +126,71 @@ RUN cd /opt/ \
 	&& make \
 	&& make install \
 	&& cd ../ \
-	&& rm -rf xdebug-$XDEBUG_VERSION* \
-	&& echo "[xdebug]" >> /usr/local/php/lib/php.ini \
-	&& echo "zend_extension=/usr/local/php/lib/php/extensions/no-debug-zts-20090626/xdebug.so" >> /usr/local/php/lib/php.ini \
-	&& echo "xdebug.remote_enable=on" >> /usr/local/php/lib/php.ini \
-	&& echo "xdebug.remote_port=9000" >> /usr/local/php/lib/php.ini \
-	&& echo ";xdebug.remote_connect_back=on" >> /usr/local/php/lib/php.ini \
-	&& echo "xdebug.remote_handler=dbgp" >> /usr/local/php/lib/php.ini \
-	&& echo "xdebug.remote_host=192.168.1.103" >> /usr/local/php/lib/php.ini \
-	&& echo "xdebug.remote_autostart=on" >> /usr/local/php/lib/php.ini \
-	&& echo "xdebug.idekey=PhpStorm" >> /usr/local/php/lib/php.ini
+	&& rm -rf xdebug-$XDEBUG_VERSION*
 
-EXPOSE 22 80 9000
+COPY php5.3/xdebug.ini /usr/local/php/conf/xdebug.ini
+### -------------------------------------- php end --------------------------------------
+
+### -------------------------------------- memcache start --------------------------------------
+ENV MEMCACHED 1.4.33
+ENV MEMCACHE 2.2.7
+
+COPY software/memcached-$MEMCACHED.tar.gz /opt/memcached-$MEMCACHED.tar.gz
+COPY software/memcache-.tgz /opt/memcache-$MEMCACHE.tgz
+
+RUN yum install libevent libevent-devel -y
+
+# memcached 服务端
+RUN cd /opt \
+	&& tar -xzvf memcached-$MEMCACHED.tar.gz \
+	&& cd memcached-MEMCACHED \
+	&& ./configure --prefix=/usr/local/memcached \
+	&& make \
+	&& make install \
+	&& cd ../ \
+	&& rm -rf memcached-MEMCACHED*
+
+# php memcache 扩展
+RUN cd /opt \
+	&& tar -xzvf memcache-$MEMCACHE.tgz \
+	&& cd memcache-$MEMCACHE \
+	&& /usr/local/php/bin/phpize \
+	&& ./configure --with-php-config=/usr/local/php/bin/php-config \
+	&& make && make install \
+	&& cd ../ \
+	&& rm -rf memcache-$MEMCACHE* \
+	&& echo "[memcache]" >> /usr/local/php/lib/php.ini \
+	&& echo "extension=/usr/local/php/lib/php/extensions/no-debug-zts-20090626/memcache.so" >> /usr/local/php/lib/php.ini
+### -------------------------------------- memcache end --------------------------------------
+
+### -------------------------------------- mysql start --------------------------------------
+ENV MYSQL_VERSION 5.6.34
+
+COPY software/mysql-$MYSQL_VERSION.tar.gz /opt/mysql-$MYSQL_VERSION.tar.gz
+COPY software/init_mysql.sh /opt/init_mysql.sh
+COPY software/my.cnf /etc/my.cnf
+
+RUN yum install cmake bison ncurses -y
+
+#mysql
+RUN cd /opt \
+	&& tar -xzvf mysql-$MYSQL_VERSION.tar.gz \
+	&& cd mysql-$MYSQL_VERSION \
+	&& cmake . \
+	&& make \
+	&& make install \
+	&& cd ../ \
+	&& rm -rf mysql-$MYSQL_VERSION* \
+	&& groupadd mysql \
+	&& useradd -g mysql mysql \
+	&& /usr/local/mysql/scripts/mysql_install_db \
+		--user=mysql \
+		--basedir=/usr/local/mysql \
+		--datadir=/usr/local/mysql/data \
+	&& chmod u+x /opt/init_mysql.sh \
+	&& /opt/init_mysql.sh
+### -------------------------------------- mysql end --------------------------------------
+
+EXPOSE 22 80 9000 3306
 
 CMD ["/usr/local/apache/bin/apachectl start"]

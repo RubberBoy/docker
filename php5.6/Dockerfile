@@ -6,7 +6,6 @@ ENV XDEBUG_VERSION 2.4.1
 
 COPY software/php-$PHP_VERSION.tar.gz /opt/php-$PHP_VERSION.tar.gz
 COPY software/xdebug-$XDEBUG_VERSION.tgz /opt/xdebug-$XDEBUG_VERSION.tgz
-COPY php.conf /usr/local/apache/conf/php.conf
 
 # php5.3
 RUN cd /opt/ \
@@ -24,6 +23,7 @@ RUN cd /opt/ \
 	&& rm -rf php-$PHP_VERSION*
 
 # apache 中 php 配置
+COPY php.conf /usr/local/apache/conf/php.conf
 RUN echo "Include /usr/local/apache/conf/php.conf" >> /usr/local/apache/conf/httpd.conf
 
 # xdebug
@@ -45,6 +45,7 @@ RUN cd /opt/ \
 	&& echo "xdebug.remote_host=192.168.1.103" >> /usr/local/php/lib/php.ini \
 	&& echo "xdebug.remote_autostart=on" >> /usr/local/php/lib/php.ini \
 	&& echo "xdebug.idekey=PhpStorm" >> /usr/local/php/lib/php.ini
+
 
 EXPOSE 22 80 9000
 

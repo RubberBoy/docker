@@ -16,7 +16,9 @@ RUN cd /opt/ \
 	&& ln -s /usr/lib64/mysql/libmysqlclient.so /usr/lib/ \
 	# 解决 「error: Cannot find libmysqlclient_r under /usr」
 	&& ln -s /usr/lib64/mysql/libmysqlclient_r.so /usr/lib/ \
-	&& ./configure --prefix=/usr/local/php --with-apxs2=/usr/local/apache/bin/apxs --with-mysql --with-pdo-mysql \
+	&& ./configure --prefix=/usr/local/php \
+		--with-apxs2=/usr/local/apache/bin/apxs \
+		--with-mysql --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd \
 	&& make \
 	&& make install \
 	&& cp /opt/php-$PHP_VERSION/php.ini-development /usr/local/php/php.ini \
