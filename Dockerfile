@@ -86,7 +86,7 @@ RUN cd /opt/ \
 	&& cd ../ \
 	&& rm -rf httpd-$APACHE_VERSION*
 
-COPY apache/httpd-vhosts.conf /usr/local/apache/extra/httpd-vhosts.conf
+COPY apache/httpd-vhosts.conf /usr/local/apache/conf/extra/httpd-vhosts.conf
 ### -------------------------------------- apache end --------------------------------------
 
 ### -------------------------------------- php start --------------------------------------
