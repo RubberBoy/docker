@@ -8,7 +8,7 @@ RUN yum install yum-plugin-ovl passwd openssl openssh-server -y \
 RUN ssh-keygen -q -t rsa -f /etc/ssh/ssh_host_rsa_key \
         && ssh-keygen -q -t dsa -f /etc/ssh/ssh_host_dsa_key \
         && ssh-keygen -q -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key -N "" \
-        && sed -i 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config
+        && sed -i 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config	\
         && sed -i 's/^root.*/root:$6$flMoy3hB$v3a.GohI8oipbH2DLd6TYorIUkvYPb2qJAc6yNsId7CVQPCpKjIG9EilgZxHREfYHAZhCMlqkUnfgfYpSp6yP1:17116:0:99999:7:::/g' /etc/shadow
 ### -------------------------------------- sshd end --------------------------------------
 
