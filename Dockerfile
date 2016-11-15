@@ -82,6 +82,7 @@ RUN cd /opt/ \
 	&& make \
 	&& make install \
 	&& sed -i "s/#ServerName www.example.com:80/ServerName localhost/g" /usr/local/apache/conf/httpd.conf \
+	&& sed -i 's/#LoadModule rewrite_module/LoadModule rewrite_module/g' /usr/local/apache/conf/httpd.conf \
 	&& sed -i "s/#Include conf\/extra\/httpd-vhosts.conf/Include conf\/extra\/httpd-vhosts.conf/g" /usr/local/apache/conf/httpd.conf \
 	&& cd ../ \
 	&& rm -rf httpd-$APACHE_VERSION*
@@ -114,6 +115,7 @@ RUN cd /opt/ \
 	&& make install \
 	&& cp /opt/php-$PHP_VERSION/php.ini-development /usr/local/php/lib/php.ini \
 	&& sed -i "s/;date.timezone =/date.timezone = \"Asia\/Shanghai\"/g" /usr/local/php/lib/php.ini \
+	&& sed -i 's/short_open_tag = Off/short_open_tag = On/g' /usr/local/php/lib/php.ini \
 	&& cd ../ \
 	&& rm -rf php-$PHP_VERSION*
 
@@ -191,5 +193,9 @@ RUN cd /opt \
 	&& chmod u+x /opt/init_mysql.sh \
 	&& /opt/init_mysql.sh
 ### -------------------------------------- mysql end --------------------------------------
+
+COPY hosts /opt/hosts
+RUN cat /opt/hosts >> /etc/hosts \
+	&& rm -rf /opt/hosts
 
 EXPOSE 22 80 9000 3306
