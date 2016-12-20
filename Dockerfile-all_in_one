@@ -1,11 +1,10 @@
 FROM centos:6.6
 MAINTAINER rubberBoy <gaosheng08@gmail.com>
 
-### -------------------------------------- basic ---------------------------------------
-RUN yum install -y yum-plugin-ovl gcc gcc-c++ glibc glibc-devel glib2 glib2-devel openssl-devel curl tar wget telnet
-
 ### -------------------------------------- sshd start --------------------------------------
-RUN yum install -y passwd openssl openssh-server
+RUN yum install -y yum-plugin-ovl gcc gcc-c++ glibc glibc-devel glib2 glib2-devel openssl-devel curl tar wget telnet \
+	&& yum install -y passwd openssl openssh-server \
+	&& yum clean all 
 
 RUN ssh-keygen -q -t rsa -f /etc/ssh/ssh_host_rsa_key \
         && ssh-keygen -q -t dsa -f /etc/ssh/ssh_host_dsa_key \
@@ -193,9 +192,5 @@ RUN cd /opt \
 	&& chmod u+x /opt/init_mysql.sh \
 	&& /opt/init_mysql.sh
 ### -------------------------------------- mysql end --------------------------------------
-
-COPY hosts /opt/hosts
-RUN cat /opt/hosts >> /etc/hosts \
-	&& rm -rf /opt/hosts
 
 EXPOSE 22 80 9000 3306
