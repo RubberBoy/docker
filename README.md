@@ -1,4 +1,4 @@
-# docker 练习项目
+# ~~ docker 练习项目 ~~ 已废弃 
 初学docker练习项目: 由纯净版 centos6.6 开始搭建 php 开发环境。
 
 ### 导火线
